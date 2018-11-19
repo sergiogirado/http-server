@@ -1,0 +1,19 @@
+{
+  "name": "http-server",
+  "version": "1.0.0",
+  "description": "Simple HTTP Server built from scratch",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chrome-apps": "0.0.7",
+    "@types/node": "^10.12.9",
+    "typescript": "^3.2.0-rc"
+  },
+  "dependencies": {
+    "rxjs": "^6.3.3"
+  }
+}
