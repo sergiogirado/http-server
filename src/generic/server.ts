@@ -1,8 +1,7 @@
 import { TcpSocket } from './tcp';
 import { HttpServer, HttpRequestHandler } from '../core/server';
-import { HttpRequest } from '../core/request';
-
 import { GenericHttpResponse } from './response';
+import { GenericHttpRequest } from './request';
 
 export class GenericHttpServer implements HttpServer {
     constructor(
@@ -13,8 +12,8 @@ export class GenericHttpServer implements HttpServer {
             const response = new GenericHttpResponse(this.tcpSocket, receivedData.clientSocketId);
 
             try {
-                const stringRquest: string = String.fromCharCode.apply(null, new Uint8Array(receivedData.data));
-                const request = HttpRequest.fromString(stringRquest);
+                const stringRequest: string = String.fromCharCode.apply(null, new Uint8Array(receivedData.data));
+                const request = new GenericHttpRequest(stringRequest);
                 this.requestHandler(request, response);
             } catch (error) {
                 response.setStatus(400);

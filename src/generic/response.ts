@@ -1,6 +1,4 @@
-import { HttpResponse } from '../core/response';
-import { HttpStatusCode, HttpReasonPhraseMap } from '../core/status';
-import { HttpResponseHeadersObject, HttpResponseHeaderName } from '../core/headers';
+import { HttpResponse, HttpStatusCode, HttpResponseHeadersObject, HttpReasonPhraseMap, HttpResponseHeaderName } from '../core/response';
 import { TcpSocket } from './tcp';
 
 export interface HttpResponseData {
@@ -52,7 +50,7 @@ export class GenericHttpResponse implements HttpResponse {
         return this.data.headers[<string>name];
     }
     text(text: string) {
-        this.setHeader("Content-Type", 'text/plain');
+        this.setHeader('Content-Type', 'text/plain');
         this.data.body = text;
     }
 

@@ -1,7 +1,6 @@
-import { HttpMethod } from './method';
-import { HttpRequestHeadersObject } from './headers';
+import { HttpGeneralHeaders, HttpEntitySpecificHeaders, HttpGenericHeadersObject } from './headers';
 
-export interface HttpRequestData {
+export interface HttpRequest {
     method: HttpMethod;
     uri: string;
     httpVersion: string;
@@ -9,48 +8,37 @@ export interface HttpRequestData {
     body: string;
 }
 
-export class HttpRequest implements HttpRequestData {
-    method: HttpMethod;
-    uri: string;
-    httpVersion: string;
-    headers: HttpRequestHeadersObject;
-    body: string;
-    public static fromString(data: string) {
-        const [head, body] = data.split(/\r?\n\r?\n/);
-        const headLines = head.split(/\r*\n/);
-        const requestLine = headLines.shift()!;
-        const [method, uri, httpVersion] = requestLine.split(' ');
-        const headers = headLines.reduce<HttpRequestHeadersObject>((previous, line) => {
-            const index = line.indexOf(':');
-            const key = line.substring(0, index);
-            const value = line.substring(index + 2, line.length);
-            const current: HttpRequestHeadersObject = {};
-            current[key] = value;
-            return { ...previous, ...current };
-        }, {});
+export type HttpMethod =
+    | 'OPTIONS'
+    | 'GET'
+    | 'HEAD'
+    | 'POST'
+    | 'PUT'
+    | 'DELETE'
+    | 'TRACE'
+    | 'CONNECT';
 
-
-        const fixedBody = headers['Content-Type'] === 'application/json'
-            ? JSON.parse(body)
-            : body;
-
-
-        return new HttpRequest({
-            method: <HttpMethod>method,
-            uri,
-            httpVersion,
-            headers,
-            body: fixedBody
-        });
-    }
-
-    constructor(
-        readonly data: HttpRequestData
-    ) {
-        this.method = data.method;
-        this.uri = data.uri;
-        this.httpVersion = data.httpVersion;
-        this.headers = data.headers;
-        this.body = data.body;
-    }
+export interface HttpRequestSpecificHeaders {
+    'Accept'?: string;
+    'Accept-Charset'?: string;
+    'Accept-Encoding'?: string;
+    'Accept-Language'?: string;
+    'Authorization'?: string;
+    'Expect'?: string;
+    'From'?: string;
+    'Host'?: string;
+    'If-Match'?: string;
+    'If-Modified-Since'?: string;
+    'If-None-Match'?: string;
+    'If-Range'?: string;
+    'If-Unmodified-Since'?: string;
+    'Max-Forwards'?: string;
+    'Proxy-Authorization'?: string;
+    'Range'?: string;
+    'Referer'?: string;
+    'TE'?: string;
+    'User-Agent'?: string;
 }
+
+export type HttpRequestHeadersObject = HttpGeneralHeaders & HttpRequestSpecificHeaders & HttpEntitySpecificHeaders & HttpGenericHeadersObject;
+export type HttpRequestHeaderName = keyof (HttpGeneralHeaders & HttpRequestSpecificHeaders & HttpEntitySpecificHeaders);

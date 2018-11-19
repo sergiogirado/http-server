@@ -1,7 +1,6 @@
 import { HttpRequest } from './request';
 import { HttpResponse } from './response';
 import { HttpServer, HttpServerFactory } from './server';
-import { HttpMiddlewareFunction } from './middleware';
 
 export class HttpApp {
     private server: HttpServer;
@@ -45,3 +44,5 @@ export class HttpApp {
         response.end();
     }
 }
+
+export type HttpMiddlewareFunction = (request: HttpRequest, reponse: HttpResponse, next: () => void) => void;

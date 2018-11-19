@@ -22,6 +22,7 @@ export class ChromeTcpSocket implements TcpSocket {
             });
         });
     }
+
     listen(port: number): Promise<void> {
         return new Promise((resolve, reject) => {
             const ip = '0.0.0.0';
@@ -35,6 +36,7 @@ export class ChromeTcpSocket implements TcpSocket {
             });
         });
     }
+
     stop(): Promise<void> {
         try {
             chrome.sockets.tcpServer.onAccept.removeListener(this.onAcceptFn);

@@ -1,8 +1,6 @@
 import * as http from 'http';
 
-import { HttpResponse } from '../core/response';
-import { HttpReasonPhraseMap, HttpStatusCode } from '../core/status';
-import { HttpResponseHeaderName } from '../core/headers';
+import { HttpResponse, HttpStatusCode, HttpReasonPhraseMap, HttpResponseHeaderName } from '../core/response';
 
 export class NodeHttpResponse implements HttpResponse {
     constructor(private response: http.ServerResponse) { }
