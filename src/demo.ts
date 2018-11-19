@@ -4,7 +4,7 @@ import { NodeHttpServerFactory } from './node/server-factory';
 import { HttpServerFactory } from './core/server';
 import { HttpApp } from './core/app';
 
-export class App {
+export class Demo {
     startGeneric() {
         const socket = new ChromeTcpSocket(); // Or any custom implementation of TCP Server Socket
         this.common(new GenericHttpServerFactory(socket));
@@ -22,5 +22,9 @@ export class App {
             response.end();
         });
         app.start(3001).then(() => console.log('Listening on port 3001'));
+    }
+
+    middleware() {
+        
     }
 }
