@@ -16,12 +16,10 @@ export class App {
 
     common(factory: HttpServerFactory) {
         const app = new HttpApp(factory);
-        app.use({
-            handleRequest: (request, response, next) => {
-                response.setStatus(200);
-                response.json({ message: 'Hello world!' });
-                response.end();
-            }
+        app.use((request, response, next) => {
+            response.setStatus(200);
+            response.json({ message: 'Hello world!' });
+            response.end();
         });
         app.start(3001).then(() => console.log('Listening on port 3001'));
     }

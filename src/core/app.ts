@@ -1,11 +1,11 @@
 import { HttpRequest } from './request';
 import { HttpResponse } from './response';
 import { HttpServer, HttpServerFactory } from './server';
-import { HttpMiddleware, HttpMiddlewareFunction } from './middleware';
+import { HttpMiddlewareFunction } from './middleware';
 
 export class HttpApp {
     private server: HttpServer;
-    private middlewares: HttpMiddleware[] = [];
+    private middlewares: HttpMiddlewareFunction[] = [];
 
     constructor(
         private serverFactory: HttpServerFactory
@@ -14,7 +14,7 @@ export class HttpApp {
     /**
      * Registers a middleware to include in the request pipeline
      */
-    public use(middleware: HttpMiddleware) {
+    public use(middleware: HttpMiddlewareFunction) {
         this.middlewares.push(middleware);
     }
 
@@ -29,13 +29,13 @@ export class HttpApp {
         this.server.listen(port);
     }
 
-    private reduceMiddlewares(request: HttpRequest, response: HttpResponse, middlewares: HttpMiddleware[]) {
+    private reduceMiddlewares(request: HttpRequest, response: HttpResponse, middlewares: HttpMiddlewareFunction[]) {
         const middleware = middlewares.shift();
         if (!middleware) {
             this.notFoundResult(request, response, () => { });
             return;
         }
-        middleware.handleRequest(request, response, () => {
+        middleware(request, response, () => {
             this.reduceMiddlewares(request, response, middlewares);
         });
     }
