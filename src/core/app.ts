@@ -41,7 +41,7 @@ export class HttpApp {
     }
 
     private notFoundResult: HttpMiddlewareFunction = (request, response) => {
-        response.status = 404;
+        response.setStatus(404);
         response.end();
     }
 }

@@ -17,7 +17,7 @@ export class GenericHttpServer implements HttpServer {
                 const request = HttpRequest.fromString(stringRquest);
                 this.requestHandler(request, response);
             } catch (error) {
-                response.status = 400;
+                response.setStatus(400);
                 response.json({ error });
             }
         });
