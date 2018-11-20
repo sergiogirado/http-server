@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+
 import { HttpMethod } from './request';
 import { HttpMiddlewareFunction } from './app';
 import { HttpStatusCode } from './response';
@@ -7,19 +8,19 @@ export class ApiMiddleware {
   onRequest: HttpMiddlewareFunction;
   constructor(
     private controllers: { [key: string]: any }[],
-    private apiManager = defaultApiManager
+    private apiManager: ApiManager = DefaultApiManager.instance
   ) {
     this.onRequest = this._onRequest.bind(this);
   }
 
   private _onRequest: HttpMiddlewareFunction = async (request, response, next) => {
     for (const controller of this.controllers) {
-      const prefix = `/${this.apiManager.getHttpController(controller.constructor)}`;
+      const prefix = `/${this.apiManager.getHttpRoutePrefix(controller.constructor)}`;
       if (!request.uri.startsWith(prefix)) {
         continue;
       }
 
-      const functions = this.apiManager.getFunctionsOf(controller);
+      const functions = this.apiManager.getDecoratedMethodsOf(controller);
       for (const functionName of functions) {
         const httpMethod = this.apiManager.getHttpMethod(controller, functionName);
         const url = `${prefix}/${httpMethod.path}`;
@@ -58,18 +59,14 @@ export class HTTPError {
   ) { }
 }
 
-const methodsAttribute = 'HTTP_CONTROLLER_METHODS';
 const httpMethodKey = Symbol('HTTP_METHOD');
 const httpRoutePrefixKey = Symbol('HTTP_ROUTE_PREFIX');
 
 type httpMethodType = { method: HttpMethod, path: string };
 
-function HttpGeneric(method: HttpMethod, path: string) {
-  return (target: { [key: string]: any }, propertyKey: string | symbol) => {
-    if (!target[methodsAttribute]) {
-      target[methodsAttribute] = [];
-    }
-    target[methodsAttribute].push(propertyKey);
+function HttpCustom(method: HttpMethod, path: string) {
+  return (target: { [key: string]: any }, propertyKey: string) => {
+    DefaultApiManager.instance.appendDecoratedMethod(target, propertyKey);
     const reflect = Reflect.metadata(httpMethodKey, <httpMethodType>{ method, path });
     reflect(target, propertyKey);
   };
@@ -80,29 +77,51 @@ export function HttpRoutePrefix(prefix: string) {
 }
 
 export function HttpGet(path: string) {
-  return HttpGeneric('GET', path);
+  return HttpCustom('GET', path);
 }
 
 export function HttpPost(path: string) {
-  return HttpGeneric('POST', path);
+  return HttpCustom('POST', path);
 }
 
 export function HttpPut(path: string) {
-  return HttpGeneric('PUT', path);
+  return HttpCustom('PUT', path);
 }
 
 export function HttpDelete(path: string) {
-  return HttpGeneric('DELETE', path);
+  return HttpCustom('DELETE', path);
 }
 
 export interface ApiManager {
   getHttpMethod(target: any, propertyKey: string): httpMethodType;
-  getHttpController(target: any): string;
-  getFunctionsOf(obj: { [key: string]: any }): string[];
+  getHttpRoutePrefix(target: any): string;
+
+  appendDecoratedMethod(get: { [key: string]: any }, propertyKey: string): void;
+  getDecoratedMethodsOf(obj: { [key: string]: any }): string[];
 }
 
-export const defaultApiManager: ApiManager = {
-  getHttpMethod: (target, propertyKey) => Reflect.getMetadata(httpMethodKey, target, propertyKey),
-  getHttpController: target => Reflect.getMetadata(httpRoutePrefixKey, target),
-  getFunctionsOf: obj => obj[methodsAttribute]
+export class DefaultApiManager implements ApiManager {
+  public static instance = new DefaultApiManager();
+  private methodsAttribute = 'HTTP_CONTROLLER_METHODS';
+
+  private constructor() { }
+
+  appendDecoratedMethod(target: { [key: string]: any }, propertyKey: string): void {
+    if (!target[this.methodsAttribute]) {
+      target[this.methodsAttribute] = [];
+    }
+    target[this.methodsAttribute].push(propertyKey);
+  }
+
+  getDecoratedMethodsOf(obj: { [key: string]: any; }): string[] {
+    return obj[this.methodsAttribute];
+  }
+
+  getHttpRoutePrefix(target: any): string {
+    return Reflect.getMetadata(httpRoutePrefixKey, target);
+  }
+
+  getHttpMethod(target: any, propertyKey: string) {
+    return Reflect.getMetadata(httpMethodKey, target, propertyKey);
+  }
 }

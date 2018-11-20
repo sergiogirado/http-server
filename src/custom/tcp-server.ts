@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 
-export interface TcpSocket {
+export interface TcpServer {
   messages$: Observable<TcpReceivedData>;
   send(clientSocketId: number, data: ArrayBuffer): Promise<number>;
   listen(port: number): Promise<void>;

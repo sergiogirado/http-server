@@ -1,18 +1,18 @@
-import { TcpSocket } from './tcp';
+import { TcpServer } from './tcp-server';
 import { HttpServer, HttpRequestHandler } from '../core/server';
-import { GenericHttpResponse } from './response';
-import { GenericHttpRequest } from './request';
+import { CustomHttpResponse } from './response';
+import { CustomHttpRequest } from './request';
 
-export class GenericHttpServer implements HttpServer {
+export class CustomHttpServer implements HttpServer {
   constructor(
-    private tcpSocket: TcpSocket,
+    private tcpSocket: TcpServer,
     private requestHandler: HttpRequestHandler
   ) {
     this.tcpSocket.messages$.subscribe(receivedData => {
-      const response = new GenericHttpResponse(this.tcpSocket, receivedData.clientSocketId);
+      const response = new CustomHttpResponse(this.tcpSocket, receivedData.clientSocketId);
 
       try {
-        const request = new GenericHttpRequest(tcpSocket, receivedData.clientSocketId, receivedData.data);
+        const request = new CustomHttpRequest(tcpSocket, receivedData.clientSocketId, receivedData.data);
         this.requestHandler(request, response);
       } catch (error) {
         response.setStatus(400);

@@ -1,4 +1,4 @@
-import { HttpGeneralHeaders, HttpEntitySpecificHeaders, HttpGenericHeadersObject } from './headers';
+import { HttpGeneralHeaders, HttpEntitySpecificHeaders, HttpCustomHeadersObject } from './headers';
 
 export interface HttpRequest {
   method: HttpMethod;
@@ -41,5 +41,5 @@ export interface HttpRequestSpecificHeaders {
   'User-Agent'?: string;
 }
 
-export type HttpRequestHeadersObject = HttpGeneralHeaders & HttpRequestSpecificHeaders & HttpEntitySpecificHeaders & HttpGenericHeadersObject;
+export type HttpRequestHeadersObject = HttpGeneralHeaders & HttpRequestSpecificHeaders & HttpEntitySpecificHeaders & HttpCustomHeadersObject;
 export type HttpRequestHeaderName = keyof (HttpGeneralHeaders & HttpRequestSpecificHeaders & HttpEntitySpecificHeaders);

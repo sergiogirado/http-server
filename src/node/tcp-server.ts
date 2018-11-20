@@ -1,8 +1,8 @@
 import * as net from 'net';
 import { Subject } from 'rxjs';
-import { TcpSocket, TcpReceivedData } from '../generic/tcp';
+import { TcpServer, TcpReceivedData } from '../custom/tcp-server';
 
-export class NodeTcpSocket implements TcpSocket {
+export class NodeTcpServer implements TcpServer {
 
   messages$ = new Subject<TcpReceivedData>();
 

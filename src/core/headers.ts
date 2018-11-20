@@ -23,4 +23,4 @@ export interface HttpEntitySpecificHeaders {
   'Last-Modified'?: string;
 }
 
-export type HttpGenericHeadersObject = { [name: string]: string };
+export type HttpCustomHeadersObject = { [name: string]: string };

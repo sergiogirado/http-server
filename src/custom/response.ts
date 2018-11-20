@@ -1,39 +1,29 @@
-import { HttpResponse, HttpStatusCode, HttpResponseHeadersObject, HttpReasonPhraseMap, HttpResponseHeaderName } from '../core/response';
-import { TcpSocket } from './tcp';
+import { HttpResponse, HttpStatusCode, HttpResponseHeadersObject, HttpResponseHeaderName, HttpReasonPhraseMap } from '../core/response';
+import { TcpServer } from './tcp-server';
 
-export interface HttpResponseData {
-  httpVersion: string;
-  statusCode: HttpStatusCode;
-  reasonPhrase: string;
-  headers: HttpResponseHeadersObject;
-  body: string;
-}
+export class CustomHttpResponse implements HttpResponse {
+  private data: HttpResponseData = {
+    httpVersion: 'HTTP/1.1',
+    statusCode: 200,
+    reasonPhrase: HttpReasonPhraseMap[200],
+    headers: {},
+    body: ''
+  };
 
-export class GenericHttpResponse implements HttpResponse {
-  private data = GenericHttpResponse.getDefaultData();
-
-  static getDefaultData(): HttpResponseData {
-    return {
-      httpVersion: 'HTTP/1.1',
-      statusCode: 200,
-      reasonPhrase: HttpReasonPhraseMap[200],
-      headers: {},
-      body: ''
-    };
-  }
   constructor(
-    private tcpSocket: TcpSocket,
+    private tcpServer: TcpServer,
     private clientSocketId: number
   ) { }
 
   end() {
     const buffer = this.encode(this.toString());
-    this.tcpSocket.send(this.clientSocketId, buffer);
+    this.tcpServer.send(this.clientSocketId, buffer);
   }
 
   getStatus() {
     return this.data.statusCode;
   }
+
   setStatus(code: HttpStatusCode) {
     this.data.statusCode = code;
     this.data.reasonPhrase = HttpReasonPhraseMap[code] || '';
@@ -46,9 +36,11 @@ export class GenericHttpResponse implements HttpResponse {
       this.data.headers[name] = value;
     }
   }
+  
   getHeader(name: HttpResponseHeaderName) {
     return this.data.headers[<string>name];
   }
+
   text(text: string) {
     this.setHeader('Content-Type', 'text/plain');
     this.data.body = text;
@@ -81,4 +73,12 @@ export class GenericHttpResponse implements HttpResponse {
     }
     return buf;
   }
+}
+
+export interface HttpResponseData {
+  httpVersion: string;
+  statusCode: HttpStatusCode;
+  reasonPhrase: string;
+  headers: HttpResponseHeadersObject;
+  body: string;
 }

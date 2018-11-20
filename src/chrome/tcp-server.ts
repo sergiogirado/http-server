@@ -1,8 +1,8 @@
 import { Subject } from 'rxjs';
 
-import { TcpSocket, TcpReceivedData } from '../generic/tcp';
+import { TcpServer, TcpReceivedData } from '../custom/tcp-server';
 
-export class ChromeTcpSocket implements TcpSocket {
+export class ChromeTcpServer implements TcpServer {
   messages$: Subject<TcpReceivedData>;
 
   private serverSocketId: number;

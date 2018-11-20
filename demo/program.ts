@@ -1,6 +1,6 @@
-import { ChromeTcpSocket } from '../src/chrome/tcp-socket';
-import { GenericHttpServerFactory } from '../src/generic/server-factory';
-import { NodeTcpSocket } from '../src/node/tcp-socket';
+import { ChromeTcpServer } from '../src/chrome/tcp-server';
+import { CustomHttpServerFactory } from '../src/custom/server-factory';
+import { NodeTcpServer } from '../src/node/tcp-server';
 import { NodeHttpServerFactory } from '../src/node/server-factory';
 import { HttpServerFactory } from '../src/core/server';
 import { HttpApp } from '../src/core/app';
@@ -9,14 +9,14 @@ import { SimpleApi } from './api';
 
 export class DemoProgram {
 
-  startGenericChrome() {
-    const socket = new ChromeTcpSocket();
-    this.common(new GenericHttpServerFactory(socket));
+  startCustomChrome() {
+    const tcpServer = new ChromeTcpServer();
+    this.common(new CustomHttpServerFactory(tcpServer));
   }
 
-  startGenericNode() {
-    const socket = new NodeTcpSocket();
-    this.common(new GenericHttpServerFactory(socket));
+  startCustomNode() {
+    const tcpServer = new NodeTcpServer();
+    this.common(new CustomHttpServerFactory(tcpServer));
   }
 
   startNode() {
@@ -25,7 +25,7 @@ export class DemoProgram {
 
   common(factory: HttpServerFactory) {
     const app = new HttpApp(factory);
-    app.use(new ApiMiddleware([new SimpleApi]).onRequest);
+    app.use(new ApiMiddleware([new SimpleApi()]).onRequest);
     app.use((request, response, next) => {
       response.setStatus(404);
       response.json({ message: 'Not Found' });
