@@ -8,7 +8,7 @@ The source code of the demo is in `./demo`
 
 # Usage
 ```typescript
-@HttpRoutePrefix('api/demo')
+@HttpRoutePrefix('demo')
 export class SimpleApi {
 
   @HttpGet('values')
@@ -19,6 +19,16 @@ export class SimpleApi {
   @HttpGet('values/async')
   getValuesAsync() {
     return Promise.resolve(['val 1', 'val 2']);
+  }
+
+  @HttpGet('error')
+  getValuesAsync() {
+    return Promise.reject(new Error('Error fromrejected promise'));
+  }
+
+  @HttpGet('error/custom')
+  getValuesAsync() {
+    throw new HttpError(401, 'No permissions');
   }
 }
 
