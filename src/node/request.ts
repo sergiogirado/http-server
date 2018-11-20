@@ -11,13 +11,11 @@ export class NodeHttpRequest implements HttpRequest {
   body: string;
 
   constructor(private request: http.IncomingMessage) {
-    return <NodeHttpRequest>{
-      method: <any>request.method,
-      uri: request.url!,
-      headers: <any>request.headers,
-      httpVersion: request.httpVersion,
-      body: null
-    };
+    this.method = <any>request.method;
+    this.uri = request.url!;
+    this.headers = <any>request.headers;
+    this.httpVersion = request.httpVersion;
+    this.body = null;
   }
 
   readBody(): Promise<void> {
