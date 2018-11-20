@@ -3,7 +3,7 @@
     "target": "ES5",
     "moduleResolution": "node",
     "module": "commonjs",
-    "outDir": "./dist",
+    "outDir": "dist",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "noUnusedLocals": true,
@@ -18,9 +18,7 @@
     ]
   },
   "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules"
+    "../src/**/*",
+    "./*"
   ]
 }

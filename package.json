@@ -7,6 +7,8 @@
   "scripts": {
     "build": "rm -rf ./dist && tsc",
     "lint": "tslint -t verbose \"src/**/*.ts\"",
+    "demo:build": "rm -rf ./demo/dist && tsc --p ./demo",
+    "demo:start": "npm run demo:build && node ./demo/dist/demo/demo.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

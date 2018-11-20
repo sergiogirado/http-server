@@ -1,26 +1,13 @@
-import { ChromeTcpSocket } from './chrome/tcp-socket';
-import { GenericHttpServerFactory } from './generic/server-factory';
-import { NodeHttpServerFactory } from './node/server-factory';
-import { HttpServerFactory } from './core/server';
-import { HttpApp } from './core/app';
-import { NodeTcpSocket } from './node/tcp-socket';
-import { HttpGet, HttpRoutePrefix, ApiMiddleware } from './core/api';
+import { ChromeTcpSocket } from '../src/chrome/tcp-socket';
+import { GenericHttpServerFactory } from '../src/generic/server-factory';
+import { NodeTcpSocket } from '../src/node/tcp-socket';
+import { NodeHttpServerFactory } from '../src/node/server-factory';
+import { HttpServerFactory } from '../src/core/server';
+import { HttpApp } from '../src/core/app';
+import { ApiMiddleware } from '../src/core/api';
+import { SimpleApi } from './api';
 
-@HttpRoutePrefix('api/demo')
-export class SimpleApi {
-
-  @HttpGet('values')
-  getValues() {
-    return ['val 1', 'val 2'];
-  }
-
-  @HttpGet('values/async')
-  getValuesAsync() {
-    return Promise.resolve(['val 1', 'val 2']);
-  }
-}
-
-export class Demo {
+export class DemoProgram {
 
   startGenericChrome() {
     const socket = new ChromeTcpSocket();
@@ -48,6 +35,3 @@ export class Demo {
     app.start(3001).then(() => console.log('Listening on port 3001')); // tslint:disable-line:no-console
   }
 }
-
-const demo = new Demo();
-demo.startGenericNode();
