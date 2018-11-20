@@ -21,10 +21,12 @@ export class SimpleApi {
 }
 
 export class Demo {
+
   startGenericChrome() {
     const socket = new ChromeTcpSocket();
     this.common(new GenericHttpServerFactory(socket));
   }
+
   startGenericNode() {
     const socket = new NodeTcpSocket();
     this.common(new GenericHttpServerFactory(socket));
