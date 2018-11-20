@@ -1,34 +1,41 @@
 import { Subject } from 'rxjs';
 
-import { TcpServer, TcpReceivedData } from '../custom/tcp-server';
+import { TcpServer, TcpSocket } from '../custom/tcp-server';
+import { ChromeTcpSocket } from './tcp-socket';
 
+
+/**
+ * @example
+ * 
+```typescript
+const tcpServer = new ChromeTcpServer();
+tcpServer
+  .connections$
+  .subscribe(client => {
+    client.send(null);
+    client.data$.subscribe(data => {
+      console.log('Data received', data);
+    });
+  });
+```
+ */
 export class ChromeTcpServer implements TcpServer {
-  messages$: Subject<TcpReceivedData>;
+  connections$ = new Subject<TcpSocket>();
 
   private serverSocketId: number;
+  private clients: { [clientSocketId: number]: ChromeTcpSocket } = {};
   private onAcceptFn = this.onAccept.bind(this);
+
   constructor() {
     chrome.sockets.tcpServer.create({}, createInfo => this.serverSocketId = createInfo.socketId);
   }
 
-  send(clientSocketId: number, data: ArrayBuffer): Promise<number> {
-    return new Promise((resolve, reject) => {
-      chrome.sockets.tcp.send(clientSocketId, data, sendInfo => {
-        if (sendInfo.resultCode >= 0) {
-          resolve(sendInfo.bytesSent);
-        } else {
-          reject(sendInfo.resultCode);
-        }
-      });
-    });
-  }
-
   listen(port: number): Promise<void> {
     return new Promise((resolve, reject) => {
-      const ip = '0.0.0.0';
-      chrome.sockets.tcpServer.listen(this.serverSocketId, ip, port, resultCode => {
+      chrome.sockets.tcpServer.listen(this.serverSocketId, '0.0.0.0', port, resultCode => {
         if (resultCode >= 0) {
           chrome.sockets.tcpServer.onAccept.addListener(this.onAcceptFn);
+          chrome.sockets.tcpServer.onAcceptError.addListener(this.onAcceptFn);
           resolve();
         } else {
           reject(resultCode);
@@ -48,13 +55,13 @@ export class ChromeTcpServer implements TcpServer {
   }
 
   private onAccept(info: chrome.sockets.AcceptEventArgs) {
-    if (info.socketId != this.serverSocketId) { return; }
+    if (info.socketId !== this.serverSocketId) { return; }
 
     chrome.sockets.tcp.onReceive.addListener(recvInfo => {
-      if (recvInfo.socketId != info.socketId) {
-        return;
+      if (!this.clients[recvInfo.socketId]) {
+        this.clients[recvInfo.socketId] = new ChromeTcpSocket(recvInfo.socketId, recvInfo.data);
+        this.connections$.next(this.clients[recvInfo.socketId]);
       }
-      this.messages$.next({ clientSocketId: recvInfo.socketId, data: recvInfo.data });
     });
     chrome.sockets.tcp.setPaused(info.socketId, false);
   }

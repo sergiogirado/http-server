@@ -1,14 +1,23 @@
 import readline = require('readline');
 import { DemoProgram } from './program';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+if (process.argv[2]) {
+  run(process.argv[2]);
+} else {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
 
-rl.question('What server do you want tu run? [node, customNode, customChrome]: ', (answer) => {
+  rl.question('What server do you want tu run? [node, customNode, customChrome]: ', answer => {
+    run(answer);
+    rl.close();
+  });
+}
+
+function run(param: string) {
   const demo = new DemoProgram();
-  switch (answer) {
+  switch (param) {
     case 'node':
       demo.startNode();
       break;
@@ -22,6 +31,4 @@ rl.question('What server do you want tu run? [node, customNode, customChrome]: '
     default:
       break;
   }
-
-  rl.close();
-});
+}

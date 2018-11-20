@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs';
 import { HttpRequest, HttpMethod, HttpRequestHeadersObject } from '../core/request';
-import { TcpServer } from './tcp-server';
+import { TcpSocket } from './tcp-server';
 
 export class CustomHttpRequest implements HttpRequest {
   method: HttpMethod;
@@ -9,14 +9,48 @@ export class CustomHttpRequest implements HttpRequest {
   headers: HttpRequestHeadersObject;
   body: string;
 
-  private partialBody: string;
+  private rawData = '';
+  private headLoaded = false;
   constructor(
-    private tcpSocket: TcpServer,
-    private clientSocketId: number,
-    initialData: ArrayBuffer
+    private client: TcpSocket
   ) {
-    const data = this.ab2trs(initialData);
-    const [head, body] = data.split(/\r?\n\r?\n/);
+  }
+
+  async readBody(): Promise<void> {
+    let suscription: Subscription;
+    await new Promise((resolve, reject) => {
+      suscription = this.client.data$.subscribe(data => {
+        this.rawData = this.rawData.concat(this.ab2trs(data));
+
+        const parts = this.rawData.split(/\r?\n\r?\n/);
+        if (!this.headLoaded && parts.length === 2) {
+          this.loadHead(parts[0]);
+          this.body = parts[1];
+        }
+
+        if (this.headLoaded) {
+          if (this.shouldHaveBody()) {
+            if (this.bodyCompleted()) {
+              resolve();
+            }
+          } else {
+            resolve();
+          }
+        }
+      });
+    });
+    suscription.unsubscribe();
+  }
+
+  private shouldHaveBody() {
+    return this.method === 'POST' || this.method === 'PUT';
+  }
+
+  private bodyCompleted() {
+    return Buffer.byteLength(this.body, 'utf8') === parseInt(this.headers['content-length'], 10);
+  }
+
+  private loadHead(head: string) {
     const headLines = head.split(/\r?\n/);
     const requestLine = headLines.shift()!;
     const [method, uri, httpVersion] = requestLine.split(' ');
@@ -33,22 +67,8 @@ export class CustomHttpRequest implements HttpRequest {
     this.uri = uri;
     this.httpVersion = httpVersion;
     this.headers = headers;
-    this.partialBody = body;
-  }
 
-  async readBody(): Promise<void> {
-    let suscription: Subscription;
-    await new Promise((resolve, reject) => {
-      suscription = this.tcpSocket.messages$.subscribe(data => {
-        if (data.clientSocketId === this.clientSocketId) {
-          this.partialBody.concat(this.ab2trs(data.data));
-          if (Buffer.byteLength(this.partialBody, 'utf8') === parseInt(this.headers['content-length'], 10)) {
-            resolve();
-          }
-        }
-      });
-    });
-    suscription.unsubscribe();
+    this.headLoaded = true;
   }
 
   private ab2trs(data: ArrayBuffer): string {

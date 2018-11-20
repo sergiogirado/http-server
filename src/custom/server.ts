@@ -5,14 +5,15 @@ import { CustomHttpRequest } from './request';
 
 export class CustomHttpServer implements HttpServer {
   constructor(
-    private tcpSocket: TcpServer,
+    private tcpServer: TcpServer,
     private requestHandler: HttpRequestHandler
   ) {
-    this.tcpSocket.messages$.subscribe(receivedData => {
-      const response = new CustomHttpResponse(this.tcpSocket, receivedData.clientSocketId);
+    this.tcpServer.connections$.subscribe(async client => {
+      const response = new CustomHttpResponse(client);
 
       try {
-        const request = new CustomHttpRequest(tcpSocket, receivedData.clientSocketId, receivedData.data);
+        const request = new CustomHttpRequest(client);
+        await request.readBody();
         this.requestHandler(request, response);
       } catch (error) {
         response.setStatus(400);
@@ -22,10 +23,10 @@ export class CustomHttpServer implements HttpServer {
   }
 
   listen(port: number): Promise<void> {
-    return this.tcpSocket.listen(port);
+    return this.tcpServer.listen(port);
   }
 
   stop() {
-    return this.tcpSocket.stop();
+    return this.tcpServer.stop();
   }
 }

@@ -1,5 +1,5 @@
 import { HttpResponse, HttpStatusCode, HttpResponseHeadersObject, HttpResponseHeaderName, HttpReasonPhraseMap } from '../core/response';
-import { TcpServer } from './tcp-server';
+import { TcpSocket } from './tcp-server';
 
 export class CustomHttpResponse implements HttpResponse {
   private data: HttpResponseData = {
@@ -11,13 +11,12 @@ export class CustomHttpResponse implements HttpResponse {
   };
 
   constructor(
-    private tcpServer: TcpServer,
-    private clientSocketId: number
+    private client: TcpSocket
   ) { }
 
   end() {
     const buffer = this.encode(this.toString());
-    this.tcpServer.send(this.clientSocketId, buffer);
+    this.client.send(buffer);
   }
 
   getStatus() {
