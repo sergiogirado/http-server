@@ -1,3 +1,8 @@
+# http-server
+Simple HTTP Server built from scratch
+
+# Usage
+```typescript
 import { ChromeTcpSocket } from './chrome/tcp-socket';
 import { GenericHttpServerFactory } from './generic/server-factory';
 import { NodeHttpServerFactory } from './node/server-factory';
@@ -21,10 +26,12 @@ export class SimpleApi {
 }
 
 export class Demo {
+
   startGenericChrome() {
     const socket = new ChromeTcpSocket();
     this.common(new GenericHttpServerFactory(socket));
   }
+
   startGenericNode() {
     const socket = new NodeTcpSocket();
     this.common(new GenericHttpServerFactory(socket));
@@ -49,3 +56,4 @@ export class Demo {
 
 const demo = new Demo();
 demo.startGenericNode();
+```

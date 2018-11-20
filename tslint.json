@@ -1,0 +1,17 @@
+{
+    "rulesDirectory": [
+        "node_modules/tslint-microsoft-contrib"
+    ],
+    "rules": {
+      "no-unused-variable": false,
+      "no-console": [
+        true,
+        "debug",
+        "info",
+        "log",
+        "time",
+        "timeEnd",
+        "trace"
+      ]
+    }
+}

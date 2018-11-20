@@ -1,25 +1,26 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "strictNullChecks": true,
-        "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "sourceMap": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "target": "es6",
-        "types": [
-            "node",
-            "chrome-apps"
-        ]
-    },
-    "include": [
-        "src/**/*"
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES5",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedLocals": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "declaration": true,
+    "lib": [
+      "es5",
+      "dom",
+      "es2015"
     ],
-    "exclude": [
-        "node_modules",
-        "**/*.spec.ts"
-    ]
+    "outDir": "./dist"
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

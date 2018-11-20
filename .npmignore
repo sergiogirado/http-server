@@ -1,0 +1,10 @@
+coverage/
+src/
+test/
+
+.editorconfig
+.gitignore
+gulpfile.js
+package-lock.json
+tsconfig.json
+tslint.json
