@@ -4,12 +4,15 @@ import { HttpMiddlewareFunction } from './app';
 import { HttpStatusCode } from './response';
 
 export class ApiMiddleware {
+    onRequest: HttpMiddlewareFunction;
     constructor(
         private controllers: { [key: string]: any }[],
         private apiManager = defaultApiManager
-    ) { }
+    ) {
+        this.onRequest = this._onRequest.bind(this);
+     }
 
-    onRequest: HttpMiddlewareFunction = async (request, response, next) => {
+    private _onRequest: HttpMiddlewareFunction = async (request, response, next) => {
         for (const controller of this.controllers) {
             const prefix = `/${this.apiManager.getHttpController(controller.constructor)}`;
             if (!request.uri.startsWith(prefix)) {
@@ -72,7 +75,7 @@ function HttpGeneric(method: HttpMethod, path: string) {
     };
 }
 
-export function HttpController(prefix: string) {
+export function HttpRoutePrefix(prefix: string) {
     return Reflect.metadata(httpRoutePrefixKey, prefix);
 }
 
