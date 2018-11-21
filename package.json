@@ -9,7 +9,7 @@
     "lint": "tslint -t verbose \"src/**/*.ts\"",
     "demo:build": "rm -rf ./demo/dist && tsc --p ./demo",
     "demo:start": "npm run demo:build && node ./demo/dist/demo/demo.js",
-    "test": "node ./node_modules/jasmine/bin/jasmine"
+    "test": "node ./node_modules/jasmine/bin/jasmine --config=jasmine.json"
   },
   "author": "Sergio Girado",
   "license": "ISC",
