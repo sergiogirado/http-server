@@ -2,13 +2,11 @@ import { HttpResponse, HttpStatusCode, HttpResponseHeadersObject, HttpResponseHe
 import { TcpSocket } from './tcp-server';
 
 export class CustomHttpResponse implements HttpResponse {
-  private data: HttpResponseData = {
-    httpVersion: 'HTTP/1.1',
-    statusCode: 200,
-    reasonPhrase: HttpReasonPhraseMap[200],
-    headers: {},
-    body: ''
-  };
+  private httpVersion: string = 'HTTP/1.1';
+  private statusCode: HttpStatusCode = 200;
+  private reasonPhrase: string = HttpReasonPhraseMap[200];
+  private headers: HttpResponseHeadersObject = {};
+  private body: string = '';
 
   constructor(
     private client: TcpSocket
@@ -20,43 +18,43 @@ export class CustomHttpResponse implements HttpResponse {
   }
 
   getStatus() {
-    return this.data.statusCode;
+    return this.statusCode;
   }
 
   setStatus(code: HttpStatusCode) {
-    this.data.statusCode = code;
-    this.data.reasonPhrase = HttpReasonPhraseMap[code] || '';
+    this.statusCode = code;
+    this.reasonPhrase = HttpReasonPhraseMap[code] || '';
   }
 
   setHeader(name: HttpResponseHeaderName, value: string) {
     if (value === null) {
-      delete this.data.headers[name];
+      delete this.headers[name];
     } else {
-      this.data.headers[name] = value;
+      this.headers[name] = value;
     }
   }
-  
+
   getHeader(name: HttpResponseHeaderName) {
-    return this.data.headers[<string>name];
+    return this.headers[<string>name];
   }
 
   text(text: string) {
     this.setHeader('Content-Type', 'text/plain');
-    this.data.body = text;
+    this.body = text;
   }
 
   json<T>(data: T) {
     this.setHeader('Content-Type', 'application/json');
-    this.data.body = JSON.stringify(data);
+    this.body = JSON.stringify(data);
   }
 
   toString() {
-    const statusLine = `${this.data.httpVersion} ${this.data.statusCode} ${this.data.reasonPhrase}`;
-    const headers = Object.keys(this.data.headers).map(name => `${name}: ${this.data.headers[name]}`);
-    const body = this.data.body;
+    const statusLine = `${this.httpVersion} ${this.statusCode} ${this.reasonPhrase}`;
+    const headers = Object.keys(this.headers).map(name => `${name}: ${this.headers[name]}`);
+    const body = this.body;
     const lines = [
       statusLine,
-      headers,
+      ...headers,
       '',
       body
     ];
@@ -74,10 +72,3 @@ export class CustomHttpResponse implements HttpResponse {
   }
 }
 
-export interface HttpResponseData {
-  httpVersion: string;
-  statusCode: HttpStatusCode;
-  reasonPhrase: string;
-  headers: HttpResponseHeadersObject;
-  body: string;
-}

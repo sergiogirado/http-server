@@ -22,18 +22,22 @@ export class CustomHttpRequest implements HttpRequest {
       suscription = this.client.data$.subscribe(data => {
         this.rawData = this.rawData.concat(this.ab2trs(data));
 
-        const parts = this.rawData.split(/\r?\n\r?\n/);
-        if (!this.headLoaded && parts.length === 2) {
-          this.loadHead(parts[0]);
-          this.body = parts[1];
+        if (!this.headLoaded) {
+          const parts = this.rawData.split(/\r?\n\r?\n/);
+          if (parts.length === 2) {
+            this.loadHead(parts[0]);
+            this.rawData = parts[1];
+          }
         }
 
         if (this.headLoaded) {
           if (this.shouldHaveBody()) {
-            if (this.bodyCompleted()) {
+            if (this.dataLengthMatch(this.rawData)) {
+              this.body = this.rawData;
               resolve();
             }
           } else {
+            this.body = '';
             resolve();
           }
         }
@@ -46,8 +50,8 @@ export class CustomHttpRequest implements HttpRequest {
     return this.method === 'POST' || this.method === 'PUT';
   }
 
-  private bodyCompleted() {
-    return Buffer.byteLength(this.body, 'utf8') === parseInt(this.headers['content-length'], 10);
+  private dataLengthMatch(data: string) {
+    return Buffer.byteLength(data, 'utf8') === parseInt(this.headers['Content-Length'], 10);
   }
 
   private loadHead(head: string) {
