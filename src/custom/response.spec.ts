@@ -1,6 +1,3 @@
-import * as chai from 'chai';
-import * as chaiSpies from 'chai-spies';
-import { expect } from 'chai';
 import { Subject } from 'rxjs';
 import { TcpSocket } from './tcp-server';
 import { CustomHttpResponse } from './response';
@@ -11,7 +8,6 @@ describe('CustomHttpResponse', () => {
   let response: CustomHttpResponse;
 
   beforeEach(() => {
-    chai.use(chaiSpies);
     clientData$ = new Subject();
     client = {
       data$: clientData$.asObservable(),
@@ -28,7 +24,7 @@ describe('CustomHttpResponse', () => {
         '',
       ].join('\n');
 
-      expect(response.toString()).to.equal(expected);
+      expect(response.toString()).toEqual(expected);
     });
 
     it('should generate a response with headers', () => {
@@ -40,7 +36,7 @@ describe('CustomHttpResponse', () => {
         '',
       ].join('\n');
 
-      expect(response.toString()).to.equal(expected);
+      expect(response.toString()).toEqual(expected);
     });
 
     it('should support plain text response', () => {
@@ -52,7 +48,7 @@ describe('CustomHttpResponse', () => {
         'Hello'
       ].join('\n');
 
-      expect(response.toString()).to.equal(expected);
+      expect(response.toString()).toEqual(expected);
     });
 
     it('should support json response', () => {
@@ -64,15 +60,15 @@ describe('CustomHttpResponse', () => {
         '{"message":"Hello"}'
       ].join('\n');
 
-      expect(response.toString()).to.equal(expected);
+      expect(response.toString()).toEqual(expected);
     });
   });
 
   describe('end', () => {
     it('should send data to the socket', () => {
-      const spy = chai.spy.on(client, 'send');
+      const spy = spyOn(client, 'send');
       response.end();
-      expect(spy).to.have.been.called();
+      expect(spy).toHaveBeenCalled();
     });
   })
 });

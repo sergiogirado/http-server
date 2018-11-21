@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { Subject } from 'rxjs';
 import { TcpSocket } from './tcp-server';
 import { CustomHttpRequest } from './request';
@@ -7,10 +6,6 @@ describe('CustomHttpRequest', () => {
   let clientData$: Subject<ArrayBuffer>;
   let client: TcpSocket;
   let request: CustomHttpRequest;
-
-  function ab2str(buf: ArrayBuffer) {
-    return String.fromCharCode.apply(null, new Uint8Array(buf));
-  }
 
   function str2ab(str: string) {
     const buf = new ArrayBuffer(str.length);
@@ -36,12 +31,12 @@ describe('CustomHttpRequest', () => {
       request
         .readBody()
         .then(() => {
-          expect(request.body).to.equal('');
-          expect(request.method).to.equal('GET');
-          expect(request.uri).to.equal('/');
+          expect(request.body).toEqual('');
+          expect(request.method).toEqual('GET');
+          expect(request.uri).toEqual('/');
           done();
         })
-        .catch(error => done(error));
+        .catch(error => done());
 
       clientData$.next(str2ab('GET / HTTP/1.1\n'));
       clientData$.next(str2ab('Header1: Value1\n'));
@@ -52,12 +47,12 @@ describe('CustomHttpRequest', () => {
       request
         .readBody()
         .then(() => {
-          expect(request.body).to.equal('10');
-          expect(request.method).to.equal('POST');
-          expect(request.uri).to.equal('/');
+          expect(request.body).toEqual('10');
+          expect(request.method).toEqual('POST');
+          expect(request.uri).toEqual('/');
           done();
         })
-        .catch(error => done(error));
+        .catch(error => done());
 
         clientData$.next(str2ab('POST / HTTP/1.1\n'));
         clientData$.next(str2ab('Content-Length: 2\n'));
