@@ -44,14 +44,10 @@ export class ChromeTcpServer implements TcpServer {
   }
 
   public stop(): Promise<void> {
-    try {
+    return new Promise(resolve => {
       chrome.sockets.tcpServer.onAccept.removeListener(this.onAcceptFn);
-      chrome.sockets.tcpServer.disconnect(this.serverSocketId);
-
-      return Promise.resolve();
-    } catch (error) {
-      return Promise.reject(error);
-    }
+      chrome.sockets.tcpServer.disconnect(this.serverSocketId, resolve);
+    });
   }
 
   private onAccept(info: chrome.sockets.AcceptEventArgs): void {
