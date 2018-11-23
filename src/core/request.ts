@@ -19,7 +19,7 @@ export class HttpUri {
   constructor(readonly raw: string) {
     const [path, query] = this.raw.split('?');
     this.path = path;
-    this.queryParams = this.getQueryParams(query);
+    this.queryParams = this.getQueryParams(query || '');
   }
 
   private getQueryParams(query: string) {

@@ -1,3 +1,4 @@
+import * as pathToRegex from 'path-to-regexp';
 import 'reflect-metadata'; // tslint:disable-line:no-import-side-effect
 
 import { HttpMiddlewareFunction } from './app';
@@ -27,10 +28,18 @@ export class ApiMiddleware {
       for (const decoratedMethodName of decoratedMethods) {
         const httpMethod = this.apiManager.getHttpMethod(controller, decoratedMethodName);
         const url = `${prefix}/${httpMethod.path}`;
+        const keys: pathToRegex.Key[] = [];
+        const urlRegex = pathToRegex(url, keys);
 
-        if (request.uri.raw === url && request.method === httpMethod.method) {
+        if (urlRegex.test(request.uri.path) && request.method === httpMethod.method) {
           try {
-            const result = await controller[decoratedMethodName](request.body);
+            const params: HttpApiParams<any> = {
+              body: <any>request.body,
+              queryParams: request.uri.queryParams,
+              routeParams: this.buildPathParams(keys, urlRegex.exec(request.uri.path))
+            };
+            const endpoint: HttpApiEndpoint<any> = (controller)[decoratedMethodName];
+            const result = await endpoint(params);
             if (result) {
               response.setStatus(200);
               response.json(result);
@@ -54,7 +63,26 @@ export class ApiMiddleware {
     }
     next();
   }
+
+  private buildPathParams(keys: pathToRegex.Key[], values: string[]) {
+    return keys
+      .map((key, index) => [key.name, values[index + 1]])
+      .reduce<{ [key: string]: string }>((previous, [key, value]) => {
+        const current: any = {};
+        current[key] = value;
+
+        return { ...previous, ...current };
+      }, {});  // tslint:disable-line:align
+  }
 }
+
+export interface HttpApiParams<T = never> {
+  routeParams: { [key: string]: string };
+  queryParams: { [key: string]: string | string[] };
+  body?: T;
+}
+
+export type HttpApiEndpoint<T = never> = (params: HttpApiParams<T>) => any;
 
 export class HTTPError {
   constructor(

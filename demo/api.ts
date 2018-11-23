@@ -1,16 +1,22 @@
-import { HttpRoutePrefix, HttpGet } from '../src/core/api';
+import { HttpApiEndpoint, HttpGet, HttpRoutePrefix } from '../src/core/api';
 
+/**
+ * Demo API
+ */
 @HttpRoutePrefix('api/demo')
 export class SimpleApi {
 
   @HttpGet('values')
-  getValues() {
+  public getValues: HttpApiEndpoint = () => {
     return ['foo', 'bar'];
   }
 
-  @HttpGet('values/async')
-  getValuesAsync() {
-    return Promise.resolve(['val 1', 'val 2']);
+  @HttpGet('values/:id')
+  public getValuesAsync: HttpApiEndpoint = ({ routeParams, queryParams }) => {
+    return Promise.resolve({
+      id: routeParams.id,
+      query: queryParams,
+      values: ['val 1', 'val 2']
+    });
   }
 }
-

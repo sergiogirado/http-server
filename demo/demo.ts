@@ -1,6 +1,10 @@
-import readline = require('readline');
+import * as readline from 'readline';
+
 import { DemoProgram } from './program';
 
+/**
+ * Demo
+ */
 if (process.argv[2]) {
   run(process.argv[2]);
 } else {
@@ -29,6 +33,6 @@ function run(param: string) {
       break;
 
     default:
-      break;
+      throw new Error(`Unsupported server: ${param}`);
   }
 }
