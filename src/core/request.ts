@@ -1,5 +1,8 @@
-import { HttpGeneralHeaders, HttpEntitySpecificHeaders, HttpCustomHeadersObject } from './headers';
+import { HttpEntitySpecificHeaders, HttpGeneralHeaders } from './headers';
 
+/**
+ * Htp request abstraction
+ */
 export interface HttpRequest {
   method: HttpMethod;
   uri: string;
@@ -9,6 +12,9 @@ export interface HttpRequest {
   readBody(): Promise<void>;
 }
 
+/**
+ * Http standard methods
+ */
 export type HttpMethod =
   | 'OPTIONS'
   | 'GET'
@@ -19,6 +25,9 @@ export type HttpMethod =
   | 'TRACE'
   | 'CONNECT';
 
+/**
+ * Http request headers
+ */
 export interface HttpRequestSpecificHeaders {
   'Accept'?: string;
   'Accept-Charset'?: string;
@@ -41,5 +50,5 @@ export interface HttpRequestSpecificHeaders {
   'User-Agent'?: string;
 }
 
-export type HttpRequestHeadersObject = HttpGeneralHeaders & HttpRequestSpecificHeaders & HttpEntitySpecificHeaders & HttpCustomHeadersObject;
-export type HttpRequestHeaderName = keyof (HttpGeneralHeaders & HttpRequestSpecificHeaders & HttpEntitySpecificHeaders);
+export type HttpRequestHeadersObject = HttpGeneralHeaders & HttpRequestSpecificHeaders & HttpEntitySpecificHeaders;
+export type HttpRequestHeaderName = keyof HttpRequestHeadersObject;

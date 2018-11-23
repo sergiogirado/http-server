@@ -1,6 +1,9 @@
-import { HttpResponse, HttpStatusCode, HttpResponseHeadersObject, HttpResponseHeaderName, HttpReasonPhraseMap } from '../core/response';
+import { HttpReasonPhraseMap, HttpResponse, HttpResponseHeaderName, HttpResponseHeadersObject, HttpStatusCode } from '../core/response';
 import { TcpSocket } from './tcp-server';
 
+/**
+ * Custom Http response
+ */
 export class CustomHttpResponse implements HttpResponse {
   private httpVersion: string = 'HTTP/1.1';
   private statusCode: HttpStatusCode = 200;
@@ -12,21 +15,21 @@ export class CustomHttpResponse implements HttpResponse {
     private client: TcpSocket
   ) { }
 
-  end() {
+  public end() {
     const buffer = this.encode(this.toString());
     this.client.send(buffer);
   }
 
-  getStatus() {
+  public getStatus() {
     return this.statusCode;
   }
 
-  setStatus(code: HttpStatusCode) {
+  public setStatus(code: HttpStatusCode) {
     this.statusCode = code;
     this.reasonPhrase = HttpReasonPhraseMap[code] || '';
   }
 
-  setHeader(name: HttpResponseHeaderName, value: string) {
+  public setHeader(name: HttpResponseHeaderName, value: string) {
     if (value === null) {
       delete this.headers[name];
     } else {
@@ -34,23 +37,23 @@ export class CustomHttpResponse implements HttpResponse {
     }
   }
 
-  getHeader(name: HttpResponseHeaderName) {
-    return this.headers[<string>name];
+  public getHeader(name: HttpResponseHeaderName) {
+    return (<any>this.headers)[<string>name];
   }
 
-  text(text: string) {
+  public text(text: string) {
     this.setHeader('Content-Type', 'text/plain');
     this.body = text;
   }
 
-  json<T>(data: T) {
+  public json<T>(data: T) {
     this.setHeader('Content-Type', 'application/json');
     this.body = JSON.stringify(data);
   }
 
-  toString() {
+  public toString() {
     const statusLine = `${this.httpVersion} ${this.statusCode} ${this.reasonPhrase}`;
-    const headers = Object.keys(this.headers).map(name => `${name}: ${this.headers[name]}`);
+    const headers = Object.keys(this.headers).map(name => `${name}: ${(<any>this.headers)[name]}`);
     const body = this.body;
     const lines = [
       statusLine,
@@ -58,6 +61,7 @@ export class CustomHttpResponse implements HttpResponse {
       '',
       body
     ];
+
     return lines.join('\n');
   }
 
@@ -68,7 +72,7 @@ export class CustomHttpResponse implements HttpResponse {
     for (let i = 0; i < strLen; i += 1) {
       bufView[i] = str.charCodeAt(i);
     }
+
     return buf;
   }
 }
-

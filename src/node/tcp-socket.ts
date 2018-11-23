@@ -2,28 +2,29 @@ import * as net from 'net';
 import { Subject } from 'rxjs';
 import { TcpSocket } from '../custom/tcp-server';
 
+/**
+ * Node tcp socket implementation
+ */
 export class NodeTcpSocket implements TcpSocket {
 
-  data$ = new Subject<ArrayBuffer>();
+  public data$ = new Subject<ArrayBuffer>();
 
   constructor(private socket: net.Socket) {
     this.socket.on('data', data => {
       const ab = new ArrayBuffer(data.length);
       const view = new Uint8Array(ab);
-      for (let i = 0; i < data.length; ++i) {
-        view[i] = data[i];
-      }
+      data.forEach((value, index) => view[index] = value);
+
       this.data$.next(ab);
     });
   }
 
-  send(data: ArrayBuffer): Promise<void> {
+  public send(data: ArrayBuffer): Promise<void> {
     return new Promise(resolve => {
-      let buffer = new Buffer(data.byteLength);
-      let view = new Uint8Array(data);
-      for (var i = 0; i < buffer.length; ++i) {
-        buffer[i] = view[i];
-      }
+      const buffer = new Buffer(data.byteLength);
+      const view = new Uint8Array(data);
+      view.forEach((value, index) => buffer[index] = value);
+
       this.socket.end(buffer, resolve);
     });
   }

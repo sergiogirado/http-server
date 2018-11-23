@@ -1,3 +1,6 @@
+/**
+ * General Http Headers
+ */
 export interface HttpGeneralHeaders {
   'Cache-Control'?: string;
   'Connection'?: string;
@@ -10,6 +13,9 @@ export interface HttpGeneralHeaders {
   'Warning'?: string;
 }
 
+/**
+ * Entity Http Headers
+ */
 export interface HttpEntitySpecificHeaders {
   'Allow'?: string;
   'Content-Encoding'?: string;
@@ -22,5 +28,3 @@ export interface HttpEntitySpecificHeaders {
   'Expires'?: string;
   'Last-Modified'?: string;
 }
-
-export type HttpCustomHeadersObject = { [name: string]: string };

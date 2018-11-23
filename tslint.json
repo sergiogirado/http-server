@@ -1,17 +1,31 @@
 {
-    "rulesDirectory": [
-        "node_modules/tslint-microsoft-contrib"
+  "extends": "tslint-microsoft-contrib",
+  "rulesDirectory": [
+    "node_modules/tslint-microsoft-contrib"
+  ],
+  "rules": {
+    "no-unused-variable": false,
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape",
+      "avoid-template"
     ],
-    "rules": {
-      "no-unused-variable": false,
-      "no-console": [
-        true,
-        "debug",
-        "info",
-        "log",
-        "time",
-        "timeEnd",
-        "trace"
-      ]
-    }
+    "typedef": [true, "parameter"],
+    "jsdoc-format": false,
+    "no-any": false,
+    "no-relative-imports": false,
+    "no-parameter-properties": false,
+    "interface-name": false,
+    "export-name": false,
+    "no-console": [
+      true,
+      "debug",
+      "info",
+      "log",
+      "time",
+      "timeEnd",
+      "trace"
+    ]
+  }
 }

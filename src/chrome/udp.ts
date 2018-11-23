@@ -4,8 +4,7 @@ import { Udp } from '../custom/tcp-server';
 
 /**
  * @example
- * 
- ```typescript
+ ```
 const udp = new ChromeUdp();
 udp
   .data$
@@ -18,7 +17,7 @@ udp.send(null, '127.0.0.1', 3001);
  ```
  */
 export class ChromeUdp implements Udp {
-  data$ = new Subject<ArrayBuffer>();
+  public data$ = new Subject<ArrayBuffer>();
 
   private onReceiveFn = this.onReceive.bind(this);
   private socketId: number;
@@ -27,7 +26,7 @@ export class ChromeUdp implements Udp {
     chrome.sockets.udp.create({}, socketInfo => this.socketId = socketInfo.socketId);
   }
 
-  send(data: ArrayBuffer, host: string, port: number): Promise<void> {
+  public send(data: ArrayBuffer, host: string, port: number): Promise<void> {
     return new Promise((resolve, reject) => {
       chrome.sockets.udp.send(this.socketId, data, host, port, sendInfo => {
         if (sendInfo.resultCode >= 0) {
@@ -39,7 +38,7 @@ export class ChromeUdp implements Udp {
     });
   }
 
-  listen(port = 0): Promise<void> {
+  public listen(port: number = 0): Promise<void> {
     return new Promise((resolve, reject) => {
       chrome.sockets.udp.onReceive.addListener(this.onReceiveFn);
       chrome.sockets.udp.bind(this.socketId, '0.0.0.0', port, result => {

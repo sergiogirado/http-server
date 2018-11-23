@@ -1,13 +1,16 @@
 import { Subscription } from 'rxjs';
-import { HttpRequest, HttpMethod, HttpRequestHeadersObject } from '../core/request';
+import { HttpMethod, HttpRequest, HttpRequestHeadersObject } from '../core/request';
 import { TcpSocket } from './tcp-server';
 
+/**
+ * Custom implementation of Http Request
+ */
 export class CustomHttpRequest implements HttpRequest {
-  method: HttpMethod;
-  uri: string;
-  httpVersion: string;
-  headers: HttpRequestHeadersObject;
-  body: string;
+  public method: HttpMethod;
+  public uri: string;
+  public httpVersion: string;
+  public headers: HttpRequestHeadersObject;
+  public body: string;
 
   private rawData = '';
   private headLoaded = false;
@@ -16,9 +19,10 @@ export class CustomHttpRequest implements HttpRequest {
   ) {
   }
 
-  async readBody(): Promise<void> {
+  public async readBody(): Promise<void> {
     let suscription: Subscription;
-    await new Promise((resolve, reject) => {
+
+    await new Promise((resolve, reject) => { // tslint:disable-line:promise-must-complete
       suscription = this.client.data$.subscribe(data => {
         this.rawData = this.rawData.concat(this.ab2trs(data));
 
@@ -43,6 +47,7 @@ export class CustomHttpRequest implements HttpRequest {
         }
       });
     });
+
     suscription.unsubscribe();
   }
 
@@ -56,16 +61,17 @@ export class CustomHttpRequest implements HttpRequest {
 
   private loadHead(head: string) {
     const headLines = head.split(/\r?\n/);
-    const requestLine = headLines.shift()!;
+    const requestLine = headLines.shift();
     const [method, uri, httpVersion] = requestLine.split(' ');
     const headers = headLines.reduce<HttpRequestHeadersObject>((previous, line) => {
       const index = line.indexOf(':');
       const key = line.substring(0, index);
       const value = line.substring(index + 2, line.length);
       const current: HttpRequestHeadersObject = {};
-      current[key] = value;
+      (<any>current)[key] = value;
+
       return { ...previous, ...current };
-    }, {});
+    }, {}); // tslint:disable-line:align
 
     this.method = <HttpMethod>method;
     this.uri = uri;

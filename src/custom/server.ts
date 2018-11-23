@@ -1,8 +1,11 @@
-import { TcpServer } from './tcp-server';
-import { HttpServer, HttpRequestHandler } from '../core/server';
-import { CustomHttpResponse } from './response';
+import { HttpRequestHandler, HttpServer } from '../core/server';
 import { CustomHttpRequest } from './request';
+import { CustomHttpResponse } from './response';
+import { TcpServer } from './tcp-server';
 
+/**
+ * Custom Http server implementation
+ */
 export class CustomHttpServer implements HttpServer {
   constructor(
     private tcpServer: TcpServer,
@@ -22,11 +25,11 @@ export class CustomHttpServer implements HttpServer {
     });
   }
 
-  listen(port: number): Promise<void> {
+  public listen(port: number): Promise<void> {
     return this.tcpServer.listen(port);
   }
 
-  stop() {
+  public stop() {
     return this.tcpServer.stop();
   }
 }

@@ -3,8 +3,11 @@ import { Subject } from 'rxjs';
 import { TcpServer, TcpSocket } from '../custom/tcp-server';
 import { NodeTcpSocket } from './tcp-socket';
 
+/**
+ * Node tcp server implementation
+ */
 export class NodeTcpServer implements TcpServer {
-  connections$ = new Subject<TcpSocket>();
+  public connections$ = new Subject<TcpSocket>();
 
   private server: net.Server;
 
@@ -14,13 +17,11 @@ export class NodeTcpServer implements TcpServer {
     });
   }
 
-  listen(port: number): Promise<void> {
-    this.server.listen(port);
-    return Promise.resolve();
+  public listen(port: number): Promise<void> {
+    return new Promise(resolve => this.server.listen(port, resolve));
   }
 
-  stop(): Promise<void> {
-    this.server.close();
-    return Promise.resolve();
+  public stop(): Promise<void> {
+    return new Promise(resolve => this.server.close(resolve));
   }
 }

@@ -3,8 +3,7 @@ import { ChromeTcpSocket } from './tcp-socket';
 
 /**
  * @example
- * 
- ```typescript
+ ```
 const tcp = new ChromeTcp();
 tcp
  .connect('', 2700)
@@ -17,23 +16,30 @@ export class ChromeTcp implements Tcp {
 
   private socketId: number;
 
-  connect(host: string, port: number): Promise<TcpSocket> {
-    return new Promise((resolve, reject) => {
-      chrome.sockets.tcp.create({}, createInfo => {
-        this.socketId = createInfo.socketId;
+  private create = new Promise((resolve, reject) => {
+    chrome.sockets.tcp.create({}, createInfo => {
+      this.socketId = createInfo.socketId;
+      resolve();
+    });
+  });
 
-        chrome.sockets.tcp.connect(createInfo.socketId, host, port, info => {
-          if (info >= 0) {
-            resolve(new ChromeTcpSocket(createInfo.socketId));
-          } else {
-            reject(info);
-          }
-        });
+  public async connect(host: string, port: number): Promise<TcpSocket> {
+    let result: TcpSocket;
+    await this.create;
+    result = await new Promise<ChromeTcpSocket>((resolve, reject) => {
+      chrome.sockets.tcp.connect(this.socketId, host, port, info => {
+        if (info >= 0) {
+          resolve(new ChromeTcpSocket(this.socketId));
+        } else {
+          reject(info);
+        }
       });
     });
+
+    return result;
   }
 
-  disconnect(): Promise<void> {
+  public disconnect(): Promise<void> {
     return new Promise(resolve => chrome.sockets.tcp.disconnect(this.socketId, resolve));
   }
 }

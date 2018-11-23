@@ -1,9 +1,12 @@
 import * as http from 'http';
 
-import { HttpServer, HttpRequestHandler } from '../core/server';
-import { NodeHttpResponse } from './response';
+import { HttpRequestHandler, HttpServer } from '../core/server';
 import { NodeHttpRequest } from './request';
+import { NodeHttpResponse } from './response';
 
+/**
+ * Node http server implementation
+ */
 export class NodeHttpServer implements HttpServer {
   private server: http.Server;
 
@@ -23,14 +26,11 @@ export class NodeHttpServer implements HttpServer {
     });
   }
 
-  listen(port: number) {
-    this.server.listen(port);
-    return Promise.resolve();
+  public listen(port: number) {
+    return new Promise<void>(resolve => this.server.listen(port, resolve));
   }
 
-  stop() {
-    return new Promise<void>((resolve, reject) => {
-      this.server.close(() => resolve());
-    });
+  public stop() {
+    return new Promise<void>(resolve => this.server.close(resolve));
   }
 }

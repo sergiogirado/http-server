@@ -2,6 +2,9 @@ import { HttpRequest } from './request';
 import { HttpResponse } from './response';
 import { HttpServer, HttpServerFactory } from './server';
 
+/**
+ * Http Application that can be configured with middlewares
+ */
 export class HttpApp {
   private server: HttpServer;
   private middlewares: HttpMiddlewareFunction[] = [];
@@ -31,9 +34,11 @@ export class HttpApp {
   private reduceMiddlewares(request: HttpRequest, response: HttpResponse, middlewares: HttpMiddlewareFunction[]) {
     const middleware = middlewares.shift();
     if (!middleware) {
-      this.notFoundResult(request, response, () => { });
+      this.notFoundResult(request, response, () => { /* never */ });
+
       return;
     }
+
     middleware(request, response, () => {
       this.reduceMiddlewares(request, response, middlewares);
     });

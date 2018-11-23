@@ -1,7 +1,11 @@
 import { Subject } from 'rxjs';
-import { TcpSocket } from './tcp-server';
-import { CustomHttpResponse } from './response';
 
+import { CustomHttpResponse } from './response';
+import { TcpSocket } from './tcp-server';
+
+/**
+ * Custom Http resposne tests
+ */
 describe('CustomHttpResponse', () => {
   let clientData$: Subject<ArrayBuffer>;
   let client: TcpSocket;
@@ -21,7 +25,7 @@ describe('CustomHttpResponse', () => {
       const expected = [
         'HTTP/1.1 200 OK',
         '',
-        '',
+        ''
       ].join('\n');
 
       expect(response.toString()).toEqual(expected);
@@ -33,7 +37,7 @@ describe('CustomHttpResponse', () => {
         'HTTP/1.1 200 OK',
         'Test-Header: Test header data',
         '',
-        '',
+        ''
       ].join('\n');
 
       expect(response.toString()).toEqual(expected);
@@ -70,5 +74,5 @@ describe('CustomHttpResponse', () => {
       response.end();
       expect(spy).toHaveBeenCalled();
     });
-  })
+  });
 });

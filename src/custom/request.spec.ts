@@ -1,7 +1,11 @@
 import { Subject } from 'rxjs';
-import { TcpSocket } from './tcp-server';
-import { CustomHttpRequest } from './request';
 
+import { CustomHttpRequest } from './request';
+import { TcpSocket } from './tcp-server';
+
+/**
+ * Custom Http request tests
+ */
 describe('CustomHttpRequest', () => {
   let clientData$: Subject<ArrayBuffer>;
   let client: TcpSocket;
@@ -14,6 +18,7 @@ describe('CustomHttpRequest', () => {
     for (let i = 0; i < strLen; i += 1) {
       bufView[i] = str.charCodeAt(i);
     }
+
     return buf;
   }
 
@@ -42,7 +47,7 @@ describe('CustomHttpRequest', () => {
       clientData$.next(str2ab('Header1: Value1\n'));
       clientData$.next(str2ab('\n'));
     });
-    
+
     it('should support incomplete data for request with body', (done) => {
       request
         .readBody()
@@ -54,9 +59,9 @@ describe('CustomHttpRequest', () => {
         })
         .catch(error => done());
 
-        clientData$.next(str2ab('POST / HTTP/1.1\n'));
-        clientData$.next(str2ab('Content-Length: 2\n'));
-        clientData$.next(str2ab('\n10'));
+      clientData$.next(str2ab('POST / HTTP/1.1\n'));
+      clientData$.next(str2ab('Content-Length: 2\n'));
+      clientData$.next(str2ab('\n10'));
     });
   });
 });

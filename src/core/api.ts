@@ -1,19 +1,22 @@
-import 'reflect-metadata';
+import 'reflect-metadata'; // tslint:disable-line:no-import-side-effect
 
-import { HttpMethod } from './request';
 import { HttpMiddlewareFunction } from './app';
+import { HttpMethod } from './request';
 import { HttpStatusCode } from './response';
 
+/**
+ * Middleware to handle request using simple APIs definitions
+ */
 export class ApiMiddleware {
-  onRequest: HttpMiddlewareFunction;
+  public onRequest: HttpMiddlewareFunction;
   constructor(
     private controllers: { [key: string]: any }[],
     private apiManager: ApiManager = DefaultApiManager.instance
   ) {
-    this.onRequest = this._onRequest.bind(this);
+    this.onRequest = this.onRequestFn.bind(this);
   }
 
-  private _onRequest: HttpMiddlewareFunction = async (request, response, next) => {
+  private onRequestFn: HttpMiddlewareFunction = async (request, response, next) => {
     for (const controller of this.controllers) {
       const prefix = `/${this.apiManager.getHttpRoutePrefix(controller.constructor)}`;
       if (!request.uri.startsWith(prefix)) {
@@ -44,6 +47,7 @@ export class ApiMiddleware {
             }
           }
           response.end();
+
           return;
         }
       }
@@ -59,36 +63,39 @@ export class HTTPError {
   ) { }
 }
 
-function HttpCustom(method: HttpMethod, path: string) {
+function HttpCustom(method: HttpMethod, path: string) { // tslint:disable-line:function-name
   return (target: { [key: string]: any }, propertyKey: string) => {
     DefaultApiManager.instance.setHttpMethod(target, propertyKey, { method, path });
   };
 }
 
-export function HttpRoutePrefix(prefix: string) {
+export function HttpRoutePrefix(prefix: string) { // tslint:disable-line:function-name
   return (target: Function) => {
     DefaultApiManager.instance.setHttpRoutePrefix(target, prefix);
-  }
+  };
 }
 
-export function HttpGet(path: string) {
+export function HttpGet(path: string) { // tslint:disable-line:function-name
   return HttpCustom('GET', path);
 }
 
-export function HttpPost(path: string) {
+export function HttpPost(path: string) { // tslint:disable-line:function-name
   return HttpCustom('POST', path);
 }
 
-export function HttpPut(path: string) {
+export function HttpPut(path: string) { // tslint:disable-line:function-name
   return HttpCustom('PUT', path);
 }
 
-export function HttpDelete(path: string) {
+export function HttpDelete(path: string) { // tslint:disable-line:function-name
   return HttpCustom('DELETE', path);
 }
 
+type httpMethodType = {
+  method: HttpMethod;
+  path: string;
+};
 
-type httpMethodType = { method: HttpMethod, path: string };
 export interface ApiManager {
   getHttpMethod(target: any, propertyKey: string): httpMethodType;
   setHttpMethod(target: any, propertyKey: string, value: httpMethodType): void;
@@ -96,39 +103,39 @@ export interface ApiManager {
   getHttpRoutePrefix(target: any): string;
   setHttpRoutePrefix(target: any, value: string): void;
 
-  setDecoratedMethods(get: { [key: string]: any }, methods: string[]): void;
+  setDecoratedMethods(obj: { [key: string]: any }, methods: string[]): void;
   getDecoratedMethods(obj: { [key: string]: any }): string[];
 }
 
 export class DefaultApiManager implements ApiManager {
+  public static instance = new DefaultApiManager();
+
   private static httpEndpointKey = Symbol('HTTP_ENDPOINT');
   private static httpMethodsKey = Symbol('HTTP_METHODS');
   private static httpRoutePrefixKey = Symbol('HTTP_ROUTE_PREFIX');
 
-  public static instance = new DefaultApiManager();
-
   private constructor() { }
 
-  getHttpMethod(target: any, propertyKey: string): httpMethodType {
+  public getHttpMethod(target: any, propertyKey: string): httpMethodType {
     return Reflect.getMetadata(DefaultApiManager.httpEndpointKey, target, propertyKey);
   }
-  setHttpMethod(target: any, propertyKey: string, value: httpMethodType): void {
+  public setHttpMethod(target: any, propertyKey: string, value: httpMethodType): void {
     const registeredMethods = DefaultApiManager.instance.getDecoratedMethods(target) || [];
     DefaultApiManager.instance.setDecoratedMethods(target, [...registeredMethods, propertyKey]);
     Reflect.metadata(DefaultApiManager.httpEndpointKey, value)(target, propertyKey);
   }
 
-  getHttpRoutePrefix(target: any): string {
+  public getHttpRoutePrefix(target: any): string {
     return Reflect.getMetadata(DefaultApiManager.httpRoutePrefixKey, target);
   }
-  setHttpRoutePrefix(target: any, value: string): void {
+  public setHttpRoutePrefix(target: any, value: string): void {
     Reflect.metadata(DefaultApiManager.httpRoutePrefixKey, value)(target);
   }
 
-  setDecoratedMethods(target: { [key: string]: any }, value: string[]): void {
+  public setDecoratedMethods(target: { [key: string]: any }, value: string[]): void {
     Reflect.metadata(DefaultApiManager.httpMethodsKey, value)(<any>target);
   }
-  getDecoratedMethods(target: { [key: string]: any; }): string[] {
+  public getDecoratedMethods(target: { [key: string]: any }): string[] {
     return Reflect.getMetadata(DefaultApiManager.httpMethodsKey, target);
   }
 }

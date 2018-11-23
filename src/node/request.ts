@@ -1,24 +1,27 @@
 import * as http from 'http';
 
-import { HttpRequest, HttpMethod, HttpRequestHeadersObject } from '../core/request';
+import { HttpMethod, HttpRequest, HttpRequestHeadersObject } from '../core/request';
 
+/**
+ * Node http request implementation
+ */
 export class NodeHttpRequest implements HttpRequest {
 
-  method: HttpMethod;
-  uri: string;
-  httpVersion: string;
-  headers: HttpRequestHeadersObject;
-  body: string;
+  public method: HttpMethod;
+  public uri: string;
+  public httpVersion: string;
+  public headers: HttpRequestHeadersObject;
+  public body: string;
 
   constructor(private request: http.IncomingMessage) {
     this.method = <any>request.method;
-    this.uri = request.url!;
+    this.uri = request.url;
     this.headers = <any>request.headers;
     this.httpVersion = request.httpVersion;
     this.body = null;
   }
 
-  readBody(): Promise<void> {
+  public readBody(): Promise<void> {
     return new Promise((resolve, reject) => {
       const data: any = [];
       this.request
