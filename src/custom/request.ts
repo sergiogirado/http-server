@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs';
-import { HttpMethod, HttpRequest, HttpRequestHeadersObject } from '../core/request';
+import { HttpMethod, HttpRequest, HttpRequestHeadersObject, HttpUri } from '../core/request';
 import { TcpSocket } from './tcp-server';
 
 /**
@@ -7,7 +7,7 @@ import { TcpSocket } from './tcp-server';
  */
 export class CustomHttpRequest implements HttpRequest {
   public method: HttpMethod;
-  public uri: string;
+  public uri: HttpUri;
   public httpVersion: string;
   public headers: HttpRequestHeadersObject;
   public body: string;
@@ -74,7 +74,7 @@ export class CustomHttpRequest implements HttpRequest {
     }, {}); // tslint:disable-line:align
 
     this.method = <HttpMethod>method;
-    this.uri = uri;
+    this.uri = new HttpUri(uri);
     this.httpVersion = httpVersion;
     this.headers = headers;
 

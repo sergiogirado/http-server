@@ -38,7 +38,7 @@ describe('CustomHttpRequest', () => {
         .then(() => {
           expect(request.body).toEqual('');
           expect(request.method).toEqual('GET');
-          expect(request.uri).toEqual('/');
+          expect(request.uri.raw).toEqual('/');
           done();
         })
         .catch(error => done());
@@ -54,7 +54,7 @@ describe('CustomHttpRequest', () => {
         .then(() => {
           expect(request.body).toEqual('10');
           expect(request.method).toEqual('POST');
-          expect(request.uri).toEqual('/');
+          expect(request.uri.raw).toEqual('/');
           done();
         })
         .catch(error => done());

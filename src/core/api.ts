@@ -19,7 +19,7 @@ export class ApiMiddleware {
   private onRequestFn: HttpMiddlewareFunction = async (request, response, next) => {
     for (const controller of this.controllers) {
       const prefix = `/${this.apiManager.getHttpRoutePrefix(controller.constructor)}`;
-      if (!request.uri.startsWith(prefix)) {
+      if (!request.uri.raw.startsWith(prefix)) {
         continue;
       }
 
@@ -28,7 +28,7 @@ export class ApiMiddleware {
         const httpMethod = this.apiManager.getHttpMethod(controller, decoratedMethodName);
         const url = `${prefix}/${httpMethod.path}`;
 
-        if (request.uri === url && request.method === httpMethod.method) {
+        if (request.uri.raw === url && request.method === httpMethod.method) {
           try {
             const result = await controller[decoratedMethodName](request.body);
             if (result) {

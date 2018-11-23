@@ -5,11 +5,41 @@ import { HttpEntitySpecificHeaders, HttpGeneralHeaders } from './headers';
  */
 export interface HttpRequest {
   method: HttpMethod;
-  uri: string;
+  uri: HttpUri;
   httpVersion: string;
   headers: HttpRequestHeadersObject;
   body: string;
   readBody(): Promise<void>;
+}
+
+export class HttpUri {
+  public path: string;
+  public queryParams: { [key: string]: string | string[] };
+
+  constructor(readonly raw: string) {
+    const [path, query] = this.raw.split('?');
+    this.path = path;
+    this.queryParams = this.getQueryParams(query);
+  }
+
+  private getQueryParams(query: string) {
+    return query
+      .split('&')
+      .map(queryItem => decodeURI(queryItem).split('='))
+      .reduce<{ [key: string]: string | string[] }>((prev, [key, value]) => {
+        if (prev[key]) {
+          if (prev[key] instanceof Array) {
+            (<string[]>prev[key]).push(value);
+          } else {
+            prev[key] = [<string>prev[key], value];
+          }
+        } else {
+          prev[key] = value;
+        }
+
+        return prev;
+      }, {}); // tslint:disable-line:align
+  }
 }
 
 /**
