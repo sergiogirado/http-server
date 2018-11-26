@@ -16,7 +16,7 @@ export class CustomHttpServer implements HttpServer {
 
       try {
         const request = new CustomHttpRequest(client);
-        await request.readBody();
+        await request.read();
         this.requestHandler(request, response);
       } catch (error) {
         response.setStatus(400);

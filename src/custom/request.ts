@@ -19,7 +19,7 @@ export class CustomHttpRequest implements HttpRequest {
   ) {
   }
 
-  public async readBody(): Promise<void> {
+  public async read(): Promise<void> {
     let suscription: Subscription;
 
     await new Promise((resolve, reject) => { // tslint:disable-line:promise-must-complete

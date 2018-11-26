@@ -9,7 +9,7 @@ export interface HttpRequest {
   httpVersion: string;
   headers: HttpRequestHeadersObject;
   body: string;
-  readBody(): Promise<void>;
+  read(): Promise<void>;
 }
 
 export class HttpUri {

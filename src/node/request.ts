@@ -21,7 +21,7 @@ export class NodeHttpRequest implements HttpRequest {
     this.body = null;
   }
 
-  public readBody(): Promise<void> {
+  public read(): Promise<void> {
     return new Promise((resolve, reject) => {
       const data: any = [];
       this.request

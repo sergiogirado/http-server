@@ -34,7 +34,7 @@ describe('CustomHttpRequest', () => {
   describe('readBody', () => {
     it('should support incomplete data for request with no body', (done) => {
       request
-        .readBody()
+        .read()
         .then(() => {
           expect(request.body).toEqual('');
           expect(request.method).toEqual('GET');
@@ -50,7 +50,7 @@ describe('CustomHttpRequest', () => {
 
     it('should support incomplete data for request with body', (done) => {
       request
-        .readBody()
+        .read()
         .then(() => {
           expect(request.body).toEqual('10');
           expect(request.method).toEqual('POST');

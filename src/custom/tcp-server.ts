@@ -10,7 +10,7 @@ export interface TcpServer {
 }
 
 /**
- * Tcp Spcket Abstraction
+ * Tcp Socket Abstraction
  */
 export interface TcpSocket {
   data$: Observable<ArrayBuffer>;

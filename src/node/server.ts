@@ -18,7 +18,7 @@ export class NodeHttpServer implements HttpServer {
         const httpRequest = new NodeHttpRequest(request);
         const httpResponse = new NodeHttpResponse(response);
 
-        await httpRequest.readBody();
+        await httpRequest.read();
         this.requestHandler(httpRequest, httpResponse);
       } catch (error) {
         throw error;
